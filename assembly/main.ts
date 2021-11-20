@@ -3,16 +3,16 @@ import { PostedMessage, messages } from './model';
 // --- contract code goes below
 
 // The maximum number of latest messages the contract returns.
-const MESSAGE_LIMIT = 10;
+const MESSAGE_LIMIT = 50;
 
 /**
  * Adds a new message under the name of the sender's account id.\
  * NOTE: This is a change method. Which means it will modify the state.\
  * But right now we don't distinguish them with annotations yet.
  */
-export function addMessage(text: string): void {
+export function addMessage(text: string, timestamp: string): void {
   // Creating a new message and populating fields with our data
-  const message = new PostedMessage(text);
+  const message = new PostedMessage(text, timestamp);
   // Adding the message to end of the the persistent collection
   messages.push(message);
 }
@@ -28,5 +28,6 @@ export function getMessages(): PostedMessage[] {
   for(let i = 0; i < numMessages; i++) {
     result[i] = messages[i + startIndex];
   }
+
   return result;
 }

@@ -5,13 +5,17 @@ import Big from 'big.js';
 import Form from './components/Form';
 import SignIn from './components/SignIn';
 import Messages from './components/Messages';
+import Notification from './components/Notification';
+import spaceman from '../assets/small-spaceman.png';
 
 const SUGGESTED_DONATION = '0';
 const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [messages, setMessages] = useState([]);
-
+  // after submitting the form, we want to show Notification
+  const [showNotification, setShowNotification] = useState(false)
+  const [isMessageSigned, setIsMessageSigned] = useState(false)
   useEffect(() => {
     // TODO: don't just fetch once; subscribe!
     contract.getMessages().then(setMessages);
@@ -28,7 +32,10 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     // update blockchain data in background
     // add uuid to each message, so we know which one is already known
     contract.addMessage(
-      { text: message.value },
+      {
+        text: message.value,
+        timestamp: new Date(),
+      },
       BOATLOAD_OF_GAS,
       Big(donation.value || '0').times(10 ** 24).toFixed()
     ).then(() => {
@@ -39,6 +46,16 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
         fieldset.disabled = false;
         message.focus();
       });
+      // show Notification
+      setShowNotification(true)
+
+      // remove Notification again after css animation completes
+      // this allows it to be shown again next time the form is submitted
+      setTimeout(() => {
+        setShowNotification(false)
+      }, 11000)
+
+      setIsMessageSigned(true)
     });
   };
 
@@ -57,17 +74,28 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
   return (
     <main>
       <header>
-        <h1>NEAR Guest Book</h1>
+        <div className="account">
+          {currentUser ? <span>{currentUser.accountId}</span> : <span> </span> }
+        </div>
         { currentUser
-          ? <button onClick={signOut}>Log out</button>
-          : <button onClick={signIn}>Log in</button>
+          ? <button className="signout" onClick={signOut}>Log out</button>
+          : <button className="signin" onClick={signIn}>Log in</button>
         }
       </header>
+      <h1 style={{ textAlign: 'center' }}>NEAR Challenge #4</h1>
       { currentUser
-        ? <Form onSubmit={onSubmit} currentUser={currentUser} />
+        ? <div className="message-area">
+            <div style={{ marginRight: '20px', flex: 2 }}>
+              <Form onSubmit={onSubmit} currentUser={currentUser} isMessageSigned={isMessageSigned} />
+            </div>
+            <div>
+              <img src={spaceman} alt="Spaceman"/>
+            </div>
+          </div>
         : <SignIn/>
       }
       { !!currentUser && !!messages.length && <Messages messages={messages}/> }
+      {showNotification && <Notification currentUser={currentUser} />}
     </main>
   );
 };
