@@ -2,11 +2,11 @@ import { addMessage, getMessages } from '../main';
 import { PostedMessage, messages } from '../model';
 import { VMContext, Context, u128 } from 'near-sdk-as';
 
-function createMessage(text: string): PostedMessage {
-  return new PostedMessage(text);
+function createMessage(text: string, timestamp: string): PostedMessage {
+  return new PostedMessage(text, timestamp);
 }
 
-const message = createMessage('hello world');
+const message = createMessage('hello world', '2021/11/21');
 
 describe('message tests', () => {
   afterEach(() => {
@@ -16,7 +16,7 @@ describe('message tests', () => {
   });
 
   it('adds a message', () => {
-    addMessage('hello world');
+    addMessage('hello world', '2021/11/21');
     expect(messages.length).toBe(
       1,
       'should only contain one message'
@@ -29,7 +29,7 @@ describe('message tests', () => {
 
   it('adds a premium message', () => {
     VMContext.setAttached_deposit(u128.from('10000000000000000000000'));
-    addMessage('hello world');
+    addMessage('hello world', '2021/11/21');
     const messageAR = getMessages();
     expect(messageAR[0].premium).toStrictEqual(true,
       'should be premium'
@@ -37,7 +37,7 @@ describe('message tests', () => {
   });
 
   it('retrieves messages', () => {
-    addMessage('hello world');
+    addMessage('hello world', '2021/11/21');
     const messagesArr = getMessages();
     expect(messagesArr.length).toBe(
       1,
@@ -49,19 +49,20 @@ describe('message tests', () => {
     );
   });
 
-  it('only show the last 10 messages', () => {
-    addMessage('hello world');
+  it('only show the last 50 messages', () => {
+    addMessage('hello world', '2021/11/21');
     const newMessages: PostedMessage[] = [];
-    for(let i: i32 = 0; i < 10; i++) {
+    for(let i: i32 = 0; i < 50; i++) {
       const text = 'message #' + i.toString();
-      newMessages.push(createMessage(text));
-      addMessage(text);
+      const timestamp = '2021/11/21'
+      newMessages.push(createMessage(text, timestamp));
+      addMessage(text, timestamp);
     }
     const messages = getMessages();
-    log(messages.slice(7, 10));
+    log(messages.slice(7, 50));
     expect(messages).toStrictEqual(
       newMessages,
-      'should be the last ten messages'
+      'should be the last fifty messages'
     );
     expect(messages).not.toIncludeEqual(
       message,
@@ -79,7 +80,7 @@ describe('attached deposit tests', () => {
   it('attaches a deposit to a contract call', () => {
     log('Initial account balance: ' + Context.accountBalance.toString());
 
-    addMessage('hello world');
+    addMessage('hello world', '2021/11/21');
     VMContext.setAttached_deposit(u128.from('10'));
 
     log('Attached deposit: 10');

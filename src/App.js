@@ -92,7 +92,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
               <img src={spaceman} alt="Spaceman"/>
             </div>
           </div>
-        : <SignIn/>
+        : <SignIn />
       }
       { !!currentUser && !!messages.length && <Messages messages={messages}/> }
       {showNotification && <Notification currentUser={currentUser} />}

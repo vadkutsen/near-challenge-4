@@ -19,19 +19,20 @@ beforeAll(async function() {
 });
 
 it('send one message and retrieve it', async() => {
-  await contract.addMessage({ text: 'aloha' });
+  await contract.addMessage({ text: 'aloha', timestamp: '2021/11/21' });
   const msgs = await contract.getMessages();
   const expectedMessagesResult = [{
     premium: false,
     sender: accountId,
-    text: 'aloha'
+    text: 'aloha',
+    timestamp: '2021/11/21'
   }];
   expect(msgs).toEqual(expectedMessagesResult);
 });
 
 it('send two more messages and expect three total', async() => {
-  await contract.addMessage({ text: 'foo' });
-  await contract.addMessage({ text: 'bar' });
+  await contract.addMessage({ text: 'foo', timestamp: '2021/11/21' });
+  await contract.addMessage({ text: 'bar', timestamp: '2021/11/21' });
   const msgs = await contract.getMessages();
   expect(msgs.length).toEqual(3);
 });
