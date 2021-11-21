@@ -1,4 +1,4 @@
-import { PostedMessage, messages } from './model';
+import { PostedMessage, messages, senders } from './model';
 
 // --- contract code goes below
 
@@ -13,8 +13,14 @@ const MESSAGE_LIMIT = 50;
 export function addMessage(text: string, timestamp: string): void {
   // Creating a new message and populating fields with our data
   const message = new PostedMessage(text, timestamp);
+  const sender = message.sender;
+  assert(
+    !senders.has(sender),
+    "You can sign message only once."
+  );
   // Adding the message to end of the the persistent collection
   messages.push(message);
+  senders.add(sender);
 }
 
 /**
@@ -28,6 +34,9 @@ export function getMessages(): PostedMessage[] {
   for(let i = 0; i < numMessages; i++) {
     result[i] = messages[i + startIndex];
   }
-
   return result;
+}
+
+export function getSenders(): string[] {
+return senders.values();
 }

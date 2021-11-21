@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, componentDidMount } from 'react';
 import PropTypes from 'prop-types';
 import Big from 'big.js';
 import Form from './components/Form';
@@ -11,15 +11,25 @@ import spaceman from '../assets/small-spaceman.png';
 const SUGGESTED_DONATION = '0';
 const BOATLOAD_OF_GAS = Big(3).times(10 ** 13).toFixed();
 
+
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [messages, setMessages] = useState([]);
+  const [senders, setSenders] = useState([]);
   // after submitting the form, we want to show Notification
   const [showNotification, setShowNotification] = useState(false)
   const [isMessageSigned, setIsMessageSigned] = useState(false)
+
   useEffect(() => {
     // TODO: don't just fetch once; subscribe!
     contract.getMessages().then(setMessages);
-  }, []);
+    contract.getSenders().then(setSenders);
+    if (currentUser) {
+      if (senders.includes(currentUser.accountId)) {
+        setIsMessageSigned(true)
+      }
+    }
+  }, [senders]);
+
 
   const onSubmit = (e) => {
     e.preventDefault();

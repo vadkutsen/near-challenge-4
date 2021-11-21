@@ -1,4 +1,4 @@
-import { context, u128, PersistentVector } from "near-sdk-as";
+import { context, u128, PersistentVector, PersistentSet } from "near-sdk-as";
 
 /** 
  * Exporting a new class PostedMessage so it can be used outside of this file.
@@ -19,3 +19,4 @@ export class PostedMessage {
  * It will be used as a prefix to all keys required to store data in the storage.
  */
 export const messages = new PersistentVector<PostedMessage>("m");
+export const senders = new PersistentSet<string>("s");
