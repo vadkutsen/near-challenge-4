@@ -38188,14 +38188,22 @@ const App = ({
   nearConfig,
   wallet
 }) => {
-  const [messages, setMessages] = (0, _react.useState)([]); // after submitting the form, we want to show Notification
+  const [messages, setMessages] = (0, _react.useState)([]);
+  const [senders, setSenders] = (0, _react.useState)([]); // after submitting the form, we want to show Notification
 
   const [showNotification, setShowNotification] = (0, _react.useState)(false);
   const [isMessageSigned, setIsMessageSigned] = (0, _react.useState)(false);
   (0, _react.useEffect)(() => {
     // TODO: don't just fetch once; subscribe!
     contract.getMessages().then(setMessages);
-  }, []);
+    contract.getSenders().then(setSenders);
+
+    if (currentUser) {
+      if (senders.includes(currentUser.accountId)) {
+        setIsMessageSigned(true);
+      }
+    }
+  }, [senders]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -38292,7 +38300,7 @@ App.propTypes = {
 var _default = App;
 exports.default = _default;
 },{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","prop-types":"../node_modules/prop-types/index.js","big.js":"../node_modules/big.js/big.js","./components/Form":"components/Form.jsx","./components/SignIn":"components/SignIn.jsx","./components/Messages":"components/Messages.jsx","./components/Notification":"components/Notification.jsx","../assets/small-spaceman.png":"../assets/small-spaceman.png"}],"config.js":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1637418290876-97282912758361" || 'guest-book.testnet';
+const CONTRACT_NAME = "dev-1637418290876-97282912758361" || 'groovy8.testnet';
 
 function getConfig(env) {
   switch (env) {
@@ -58126,7 +58134,7 @@ async function initContract() {
   // accounts can only have one contract deployed to them. 
   nearConfig.contractName, {
     // View methods are read-only – they don't modify the state, but usually return some value
-    viewMethods: ['getMessages'],
+    viewMethods: ['getMessages', 'getSenders'],
     // Change methods can modify the state, but you don't receive the returned value when called
     changeMethods: ['addMessage'],
     // Sender is the account ID to initialize transactions.
@@ -58182,7 +58190,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50290" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63891" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
